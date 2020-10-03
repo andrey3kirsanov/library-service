@@ -1,0 +1,55 @@
+
+logging:
+  level:
+    ROOT: INFO
+    ru.library: INFO
+
+spring:
+  application:
+    name: library-service
+  profiles:
+    active: dev
+    include: swagger
+  mail:
+    host: ${EMAIL_HOST:SET_ME_EXPLICITLY}
+    protocol: ${EMAIL_PROTOCOL:smtp}
+    port: ${EMAIL_PORT:465}
+    username: ${EMAIL_USERNAME:SET_ME_EXPLICITLY}
+    password: ${EMAIL_PASSWORD:SET_ME_EXPLICITLY}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          from: ${EMAIL_ADDRESS:SET_ME_EXPLICITLY}
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            enable: true
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.postgresql.Driver
+    url:      ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/library}
+    username: ${DATASOURCE_USERNAME:postgres}
+    password: ${DATASOURCE_PASSWORD:postgres}
+  # Spring Data JPA configuration
+  jpa:
+    database-platform: ru.library.repository.FixedPostgreSQLDialect
+    database: POSTGRESQL
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  liquibase:
+    change-log: classpath:liquibase-master.xml
+
+server:
+  port: 8080
+
+application:
+  access-token-ttl-in-seconds: 600
+  refresh-token-ttl-in-seconds: 604800 # 1 week

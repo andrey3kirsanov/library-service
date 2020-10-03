@@ -1,0 +1,115 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+        gradlePluginPortal()
+        maven { url "https://repo.spring.io/plugins-release" }
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    allprojects {
+        repositories {
+            jcenter()
+            maven { url "https://jitpack.io" }
+        }
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
+        classpath "io.spring.gradle:propdeps-plugin:0.0.10.RELEASE"
+        classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:1.5.1"
+    }
+}
+
+plugins {
+    id 'org.springframework.boot' version '2.1.6.RELEASE'
+    id 'java'
+    id 'application'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = 'ru.library'
+version = '0.0.1-SNAPSHOT'
+
+sourceCompatibility = '11'
+targetCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    compile "org.springframework.boot:spring-boot-starter-actuator"
+
+    //Lombok
+    compileOnly "org.projectlombok:lombok:$lombok_version"
+    testCompileOnly "org.projectlombok:lombok:$lombok_version"
+    annotationProcessor "org.projectlombok:lombok:$lombok_version"
+    testAnnotationProcessor "org.projectlombok:lombok:$lombok_version"
+    implementation "org.hibernate.validator:hibernate-validator"
+
+    // Swagger
+    compile "io.springfox:springfox-swagger2:$swager_version"
+    compile "io.springfox:springfox-swagger-ui:$swager_version"
+
+    //Liquibase
+    compile "org.liquibase:liquibase-core"
+
+    implementation 'org.postgresql:postgresql:42.2.5'
+
+    //Postgresql test container
+    testCompile "org.testcontainers:postgresql:1.11.2"
+
+    //Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    // jUnit5
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+
+    // Apache Commons
+    compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
+
+    // Spring Mail
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.2.6.RELEASE'
+
+    // Temporary codes and password generator/strong verifier
+    compile group: 'org.passay', name: 'passay', version: '1.3.0'
+
+    // Supports all standard signature (JWS) and encryption (JWE) algorithms
+    implementation "com.nimbusds:nimbus-jose-jwt:7.8.1"
+    implementation "com.google.crypto.tink:tink:1.2.2"
+}
+
+def MainClassName = 'ru.library.LibraryServiceApp'
+
+mainClassName = MainClassName
+
+springBoot {
+    mainClassName = MainClassName
+    buildInfo()
+}
+
+bootJar {
+    manifest {
+        attributes 'Start-Class': MainClassName
+    }
+}
+
+task testReport(type: TestReport) {
+    destinationDir = file("$buildDir/reports/tests")
+    reportOn test
+}
